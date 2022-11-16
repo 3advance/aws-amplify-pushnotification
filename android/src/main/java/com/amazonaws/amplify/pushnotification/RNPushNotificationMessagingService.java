@@ -104,16 +104,11 @@ public class RNPushNotificationMessagingService extends FirebaseMessagingService
 
         Log.i(LOG_TAG, "sendNotification: " + bundle);
 
-        // if (!isForeground) {
-        //     Application applicationContext = (Application) context.getApplicationContext();
-        //     RNPushNotificationHelper pushNotificationHelper = new RNPushNotificationHelper(applicationContext);
-        //     pushNotificationHelper.sendToNotificationCentre(bundle);
-        // }
-
-        // we want to send notification to center api regardless of if app in fg/bg
-        Application applicationContext = (Application) context.getApplicationContext();
-        RNPushNotificationHelper pushNotificationHelper = new RNPushNotificationHelper(applicationContext);
-        pushNotificationHelper.sendToNotificationCentre(bundle);
+        if (!isForeground) {
+            Application applicationContext = (Application) context.getApplicationContext();
+            RNPushNotificationHelper pushNotificationHelper = new RNPushNotificationHelper(applicationContext);
+            pushNotificationHelper.sendToNotificationCentre(bundle);
+        }
 
     }
 
