@@ -15,8 +15,6 @@ package com.amazonaws.amplify.pushnotification.modules;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
-import android.os.Bundle;
 import android.util.Log;
 
 import com.facebook.react.ReactApplication;
@@ -35,8 +33,6 @@ public class RNPushNotificationBroadcastReceiver extends BroadcastReceiver {
         String packageName = context.getPackageName();
         Intent launchIntent = context.getPackageManager().getLaunchIntentForPackage(packageName);
         String className = launchIntent.getComponent().getClassName();
-        Log.d(LOG_TAG, String.format("%s %s", packageName, className));
-
         try {
             return Class.forName(className);
         } catch (ClassNotFoundException e) {
@@ -45,18 +41,9 @@ public class RNPushNotificationBroadcastReceiver extends BroadcastReceiver {
         }
     }
 
-    // private void openApp(Context context) {
-    private void openApp(Context context, Bundle notification) {
+    private void openApp(Context context) {
         Class intentClass = getMainActivityClass(context);
-        // Intent launchIntent = new Intent(context, intentClass);
-        String deeplink = notification.getString("pinpoint.deeplink");
-        Boolean hasDeeplink = deeplink != null;
-
-        // if pinpoint data has a deeplink, we use an ACTION_VIEW intent (https://developer.android.com/reference/android/content/Intent#ACTION_VIEW)
-        // using this type of Intent is what native android Linking.getInitialUrl expects (https://github.com/facebook/react-native/blob/v0.64.3/ReactAndroid/src/main/java/com/facebook/react/modules/intent/IntentModule.java#L59)
-        // this allows us to handle deep linking on cold push
-        Intent launchIntent = hasDeeplink ? new Intent(Intent.ACTION_VIEW, Uri.parse(deeplink)) : new Intent(context, intentClass);
-
+        Intent launchIntent = new Intent(context, intentClass);
         if (launchIntent == null) {
             Log.e(LOG_TAG, "Couldn't get app launch intent for campaign notification.");
             return;
@@ -64,7 +51,6 @@ public class RNPushNotificationBroadcastReceiver extends BroadcastReceiver {
 
         launchIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
         launchIntent.setPackage(null);
-        Log.e(LOG_TAG, "opening app");
         context.startActivity(launchIntent);
     }
 
@@ -91,8 +77,7 @@ public class RNPushNotificationBroadcastReceiver extends BroadcastReceiver {
                 mReactInstanceManager.createReactContextInBackground();
             }
         }
-        // openApp(context);
-        openApp(context, intent.getBundleExtra("notification"));
+        openApp(context);
     }
 
     private void emitNotificationOpenedEvent(ReactContext reactContext, Intent intent){
