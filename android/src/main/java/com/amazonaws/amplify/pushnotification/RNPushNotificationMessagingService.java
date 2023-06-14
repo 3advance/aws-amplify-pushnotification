@@ -109,7 +109,6 @@ public class RNPushNotificationMessagingService extends FirebaseMessagingService
             RNPushNotificationHelper pushNotificationHelper = new RNPushNotificationHelper(applicationContext);
             pushNotificationHelper.sendToNotificationCentre(bundle);
         }
-
     }
 
     // whether the app is in foreground
